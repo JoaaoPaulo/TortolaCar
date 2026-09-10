@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 430" role="img" aria-label="TortolaCar Detail - Estética Automotiva">
+  <defs>
+    <linearGradient id="tcChrome" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset=".34" stop-color="#dcdfe3"/>
+      <stop offset=".54" stop-color="#7e848c"/><stop offset=".74" stop-color="#cfd3d8"/>
+      <stop offset="1" stop-color="#878d96"/>
+    </linearGradient>
+    <linearGradient id="tcRed" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2665d"/><stop offset=".55" stop-color="#dd3b33"/>
+      <stop offset="1" stop-color="#a51e1a"/>
+    </linearGradient>
+    <linearGradient id="tcGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e9d7a8"/><stop offset=".5" stop-color="#c9a961"/>
+      <stop offset="1" stop-color="#9a7d40"/>
+    </linearGradient>
+    <path id="tcShield" d="M104 62c0-16 9-25 25-26h142c16 1 25 10 25 26v88c0 79-38 138-96 174-58-36-96-95-96-174z"/>
+    <path id="tcStar" d="M0-19 5.6-6.1 19.6-4.7 9 4.8 12 18.6 0 11.4-12 18.6-9 4.8-19.6-4.7-5.6-6.1z"/>
+  </defs>
+
+  <!-- speed lines -->
+  <g fill="url(#tcRed)" stroke="#7d1512" stroke-width="1.5">
+    <g transform="translate(86 300) rotate(-17)">
+      <rect x="-52" y="-24" width="66" height="12" rx="6"/>
+      <rect x="-40" y="-2"  width="78" height="12" rx="6"/>
+      <rect x="-28" y="20"  width="66" height="12" rx="6"/>
+    </g>
+    <g transform="translate(314 300) rotate(17) scale(-1 1)">
+      <rect x="-52" y="-24" width="66" height="12" rx="6"/>
+      <rect x="-40" y="-2"  width="78" height="12" rx="6"/>
+      <rect x="-28" y="20"  width="66" height="12" rx="6"/>
+    </g>
+  </g>
+
+  <!-- shield -->
+  <use href="#tcShield" fill="#2f2f33" stroke="#ffffff" stroke-width="34" stroke-linejoin="round"/>
+  <use href="#tcShield" fill="#2f2f33" stroke="url(#tcChrome)" stroke-width="22" stroke-linejoin="round"/>
+  <g transform="translate(200 176) scale(.845) translate(-200 -176)">
+    <use href="#tcShield" fill="#2f2f33" stroke="url(#tcRed)" stroke-width="15" stroke-linejoin="round"/>
+  </g>
+
+  <!-- TC monogram: C behind, T over -->
+  <path d="M214.6 134A60 60 0 1 0 214.6 226" fill="none" stroke="#2f2f33" stroke-width="32"/>
+  <path d="M214.6 134A60 60 0 1 0 214.6 226" fill="none" stroke="#ffffff" stroke-width="24"/>
+  <path d="M158 100h104v27h-38v131h-27V127h-39z" fill="#ffffff" stroke="#2f2f33" stroke-width="5"
+        stroke-linejoin="round" paint-order="stroke"/>
+
+  <!-- stars -->
+  <g fill="url(#tcGold)" stroke="#75602f" stroke-width="1.6">
+    <use href="#tcStar" transform="translate(122 306) scale(.98)"/>
+    <use href="#tcStar" transform="translate(161 324) scale(.84)"/>
+    <use href="#tcStar" transform="translate(200 331) scale(.79)"/>
+    <use href="#tcStar" transform="translate(239 324) scale(.84)"/>
+    <use href="#tcStar" transform="translate(278 306) scale(.98)"/>
+  </g>
+
+  <!-- banner -->
+  <g transform="translate(200 380) rotate(-2) translate(-200 -380)">
+    <rect x="22" y="348" width="356" height="70" rx="15" fill="#232326" stroke="#ffffff" stroke-width="7"/>
+    <text x="200" y="388" text-anchor="middle" textLength="316" lengthAdjust="spacingAndGlyphs"
+          font-family="'Barlow Condensed','Arial Narrow',Impact,sans-serif"
+          font-size="46" font-weight="800" font-style="italic"
+          fill="url(#tcChrome)" stroke="#2f2f33" stroke-width="2.5" paint-order="stroke">TORTOLACARDETAIL</text>
+    <text x="200" y="408" text-anchor="middle" textLength="212" lengthAdjust="spacingAndGlyphs"
+          font-family="'Barlow Condensed','Arial Narrow',sans-serif"
+          font-size="16" font-weight="600" fill="#b9b0a0">ESTÉTICA AUTOMOTIVA</text>
+  </g>
+</svg>
