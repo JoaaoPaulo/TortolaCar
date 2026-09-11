@@ -10,8 +10,6 @@ Site estático, sem build e sem dependências externas: basta publicar a pasta.
 
 ## Como publicar
 
-Qualquer hospedagem de arquivos estáticos serve.
-
 | Serviço | Como fazer |
 | --- | --- |
 | **GitHub Pages** | Settings → Pages → Source: `main` / `root` |
@@ -25,7 +23,7 @@ npx http-server -p 8080
 # abra http://localhost:8080
 ```
 
-Abrir o `index.html` direto pelo `file://` funciona, mas as fontes locais são
+Abrir o `index.html` pelo `file://` funciona, mas as fontes locais são
 bloqueadas por CORS — prefira um servidor.
 
 ---
@@ -39,85 +37,86 @@ assets/
   css/style.css         identidade visual, componentes e responsividade
   css/fonts.css         @font-face das fontes auto-hospedadas
   js/main.js            conteúdo dinâmico e interações
-  fonts/                Anton, Saira Condensed, Barlow, Space Mono, Kaushan Script
+  fonts/                Instrument Serif, Manrope, Saira Condensed
   img/                  44 fotos (.jpg + .webp) e o brasão em .svg
 ```
 
 ---
 
-## Identidade visual
+## A identidade
 
-Tudo saiu da loja real:
+A página **alterna entre claro e escuro conforme você rola** — a recepção e o
+box da loja. É isso que dá caráter, não um fundo preto uniforme.
 
-| Elemento | Origem |
+| | |
 | --- | --- |
-| Vermelho `--red` | A fachada e a faixa do piso modular |
-| Preto quente `--ink` | O piso de borracha e o concreto do box |
-| Dourado `--gold` | As estrelas do brasão |
-| Faixa diagonal | A faixa vermelha que corta o piso |
-| Cromado nos títulos | O acabamento do brasão na placa |
-| Manuscrito | O slogan pintado na placa da fachada |
+| `--bone` `#f4f1ea` | Concreto claro e quente das seções de texto |
+| `--ink` `#0b0b0c` | Preto profundo das seções de fotografia |
+| `--red` `#dc2f28` | O vermelho da fachada, único acento |
 
-As cores ficam todas em `:root`, no início do `assets/css/style.css`.
+**Tipografia:** Instrument Serif nos títulos — a serifada ecoa o monograma do
+brasão, e o itálico vermelho marca a palavra-chave de cada frase. Manrope no
+texto e na interface. Só duas famílias.
 
-**Tipografia:** Anton nos títulos, Saira Condensed na interface, Barlow no texto
-corrido, Space Mono nas etiquetas técnicas e Kaushan Script no slogan.
+Os tokens ficam em `:root` e no bloco `body[data-t="light"]`, no início do
+`assets/css/style.css`. Cada seção declara `data-theme="light|dark"` no HTML.
 
 ---
 
 ## Editando o conteúdo
 
-**Serviços** ficam no `index.html`, dentro de `<ol class="idx-list">` — são
-conteúdo de busca, por isso estão no HTML. Cada linha tem `data-img` (nome do
-arquivo da foto, sem extensão) e `data-cap` (legenda).
+**Serviços** ficam no `index.html`, dentro de `<ol class="idx">` — são conteúdo
+de busca, por isso estão no HTML. Cada linha tem `data-img` (arquivo da foto,
+sem extensão) e `data-cap` (legenda).
 
-**Galeria, avaliações, marquee e horários** ficam em arrays no topo do
-`assets/js/main.js`:
+**Galeria, avaliações e horários** ficam em arrays no topo do `assets/js/main.js`:
 
 ```js
-const GALERIA    = [ { f:'arquivo', k:'tall|wide|sq', c:'legenda', a:'texto alternativo' }, ... ];
+const GALERIA    = [ { f:'arquivo', k:'t|w|s', c:'legenda', a:'texto alternativo' }, ... ];
 const AVALIACOES = [ { n:'Nome', q:'quando', t:'texto da avaliação' }, ... ];
-const MARQUEE    = ['Polimento técnico', 'Vitrificação', ...];
-const MQ_FOTOS   = ['det-polidor', 'det-bmw-capo', ...];
 const HORARIOS   = [ { d:'Segunda', h:'08:00 — 18:00', abre:['08:00','18:00'] }, ... ];
 ```
 
+`k` é o formato do quadro na galeria: `t` alto, `w` largo, `s` quadrado.
+
 **Trocar telefone ou endereço:** procure por `5544999906329` e por
-`São Judas Tadeu` no `index.html` e no `main.js`.
+`São Judas Tadeu` no `index.html`.
 
 **Adicionar uma foto:** coloque o `.jpg` e o `.webp` em `assets/img/` e
 acrescente uma entrada em `GALERIA`. Largura recomendada: ~1400px.
 
 ---
 
-## O que já está pronto
+## Efeitos
 
-**Interações**
+| Efeito | Onde |
+| --- | --- |
+| Troca de superfície clara/escura na rolagem | a página inteira |
+| Título que sobe linha a linha, por máscara | hero, títulos de seção |
+| Foto que segue o cursor ao passar pelos serviços | serviços (desktop) |
+| Cursor que vira um disco com "Ver" | galeria (desktop) |
+| Galeria que prende a tela e corre na horizontal | galeria (desktop) |
+| Cartões de avaliação que empilham ao rolar | avaliações (desktop) |
+| Cortina que sobe revelando a foto | a loja, mapa |
+| Parallax da imagem dentro do quadro | hero, galeria, a loja |
+| Preenchimento do botão a partir do ponto do cursor | todos os botões |
+| Menu que abre em círculo a partir do ícone | celular |
 
-- Galeria que prende a tela e corre na horizontal conforme você rola
-  (no celular vira rolagem lateral com encaixe)
-- Índice de serviços que troca a foto ao passar o mouse; no celular cada
-  serviço mostra a própria foto
-- Carrossel de avaliações 5★ do Google, com "ler completa"
-- Lightbox com teclado, setas e contador
-- Menu em tela cheia no celular, revelação no scroll, contadores animados
+No celular tudo tem equivalente adequado ao toque: a galeria vira rolagem
+lateral com encaixe, cada serviço mostra a própria foto, e a pilha de
+avaliações vira lista.
 
-**Efeitos**
+---
 
-- Filme de grão sobre a página inteira
-- Brilho cromado que varre os títulos ao aparecerem
-- Holofote que segue o cursor no topo (lembra a lanterna de inspeção)
-- Botões com cantos chanfrados, preenchimento que entra pela esquerda e
-  atração magnética ao cursor
-- Dois marquees em direções opostas — um de texto, um de fotos em P&B
-- Parallax no topo e revelação palavra a palavra
+## Verificado
 
-**Base**
-
-- Responsivo verificado de 320px a 1920px, sem rolagem horizontal
+- Responsivo de 320px a 1920px, sem rolagem horizontal
+- Sem erros de console; todas as imagens carregam
+- Funciona sem JavaScript (serviços, telefone e endereço no HTML)
+- Respeita `prefers-reduced-motion`
+- Foco visível no teclado; contraste de texto 17:1 nos dois temas
 - `schema.org` `AutoDetailing` com avaliações, serviços e horários
-- Horário que mostra **aberto/fechado agora** conforme o dia e a hora
-- Funciona sem JavaScript e respeita `prefers-reduced-motion`
+- Horário mostra **aberto/fechado agora** conforme o dia e a hora
 - Fontes e imagens locais — nenhuma requisição a terceiros
 
 ---
@@ -125,10 +124,9 @@ acrescente uma entrada em `GALERIA`. Largura recomendada: ~1400px.
 ## Conteúdo
 
 Fotos, avaliações e dados cadastrais vieram do perfil da loja no Google Maps.
-Além dos enquadramentos originais, há recortes de detalhe e texturas extraídos
-das mesmas fotos em resolução cheia. As placas visíveis foram desfocadas.
-O brasão foi reproduzido em SVG a partir da fachada, mantendo forma, cores e
-tipografia originais.
+Além dos enquadramentos originais, há recortes de detalhe extraídos das mesmas
+fotos em resolução cheia. As placas visíveis foram desfocadas. O brasão foi
+reproduzido em SVG a partir da fachada, mantendo forma, cores e tipografia.
 
 ## Contato
 

@@ -1,7 +1,7 @@
 /* ==========================================================================
    TORTOLACAR DETAIL — interações
-   Conteúdo editável: as listas GALERIA, AVALIACOES, MARQUEE e HORARIOS
-   logo abaixo. Os serviços ficam no index.html (são conteúdo de busca).
+   Conteúdo editável: GALERIA, AVALIACOES e HORARIOS logo abaixo.
+   Os serviços ficam no index.html (são conteúdo de busca).
    ========================================================================== */
 (() => {
 'use strict';
@@ -9,31 +9,32 @@
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+const lerp  = (a, b, t) => a + (b - a) * t;
 const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fino  = matchMedia('(hover:hover) and (pointer:fine)').matches;
 
 /* ------------------------------------------------------------- CONTEÚDO */
 
-// Arquivo fotográfico. f = nome do arquivo em assets/img (sem extensão),
-// k = formato do quadro (tall | wide | sq), a = texto alternativo, c = legenda.
+// f = arquivo em assets/img (sem extensão) · k = formato (t alto | w largo | s quadrado)
 const GALERIA = [
-  { f:'porsche',          k:'tall', c:'Porsche Macan — finalização',  a:'Porsche Macan branco finalizado no box da TortolaCar Detail' },
-  { f:'det-porsche',      k:'wide', c:'Macan — frente',               a:'Frente do Porsche Macan sob a iluminação em LED do box' },
-  { f:'bmw',              k:'sq',   c:'BMW — polimento',              a:'BMW Série 1 preta com a pintura espelhada após o polimento' },
-  { f:'polimento',        k:'tall', c:'Polimento técnico',            a:'Polimento técnico sendo executado na lateral de um sedã vermelho' },
-  { f:'det-rr-roda',      k:'sq',   c:'Roda e pinça vermelha',        a:'Roda preta e pinça de freio vermelha após detalhamento' },
-  { f:'rangerover',       k:'tall', c:'Range Rover — na fachada',     a:'Range Rover Sport preta em frente à fachada da loja' },
-  { f:'det-motos-fila',   k:'wide', c:'Motos no box',                 a:'Motocicletas alinhadas no box da TortolaCar Detail' },
-  { f:'fusion',           k:'tall', c:'Ford Fusion — entrega',        a:'Ford Fusion branco pronto para entrega no box' },
-  { f:'det-moto-disco',   k:'sq',   c:'Disco e roda dianteira',       a:'Detalhe do disco de freio e da roda dianteira de uma moto' },
-  { f:'lavagem',          k:'tall', c:'Lavagem técnica',              a:'Honda HR-V coberto de espuma durante a lavagem técnica' },
-  { f:'det-hrv',          k:'wide', c:'Espuma de contato',            a:'Espuma cobrindo a traseira de um HR-V durante a lavagem' },
-  { f:'civic',            k:'tall', c:'Honda Civic — acabamento',     a:'Honda Civic branco refletindo as barras de LED do teto' },
-  { f:'moto-race',        k:'wide', c:'Moto de pista',                a:'Moto de pista laranja preparada no box' },
-  { f:'fachada',          k:'tall', c:'Audi Q3 — na fachada',         a:'Audi Q3 prata em frente à fachada da TortolaCar Detail' },
-  { f:'det-audi-roda',    k:'sq',   c:'Roda — Audi Q3',               a:'Detalhe da roda do Audi Q3 após o detalhamento' },
-  { f:'moto-twister',     k:'wide', c:'Honda Twister',                a:'Honda Twister preta com brilho após o detalhamento' },
-  { f:'motos',            k:'tall', c:'Box de motos',                 a:'Três motocicletas em detalhamento no box' },
-  { f:'moto-estrada',     k:'tall', c:'Depois do serviço',            a:'Moto preta na estrada ao entardecer após o detalhamento' },
+  { f:'porsche',        k:'t', c:'Porsche Macan — finalização', a:'Porsche Macan branco finalizado no box da TortolaCar Detail' },
+  { f:'det-porsche',    k:'w', c:'Macan — frente',              a:'Frente do Porsche Macan sob a iluminação em LED do box' },
+  { f:'bmw',            k:'s', c:'BMW — polimento',             a:'BMW Série 1 preta com a pintura espelhada após o polimento' },
+  { f:'polimento',      k:'t', c:'Polimento técnico',           a:'Polimento técnico sendo executado na lateral de um sedã vermelho' },
+  { f:'det-rr-roda',    k:'s', c:'Roda e pinça vermelha',       a:'Roda preta e pinça de freio vermelha após detalhamento' },
+  { f:'rangerover',     k:'t', c:'Range Rover — na fachada',    a:'Range Rover Sport preta em frente à fachada da loja' },
+  { f:'det-motos-fila', k:'w', c:'Motos no box',                a:'Motocicletas alinhadas no box da TortolaCar Detail' },
+  { f:'fusion',         k:'t', c:'Ford Fusion — entrega',       a:'Ford Fusion branco pronto para entrega no box' },
+  { f:'det-moto-disco', k:'s', c:'Disco e roda dianteira',      a:'Detalhe do disco de freio e da roda dianteira de uma moto' },
+  { f:'lavagem',        k:'t', c:'Lavagem técnica',             a:'Honda HR-V coberto de espuma durante a lavagem técnica' },
+  { f:'det-hrv',        k:'w', c:'Espuma de contato',           a:'Espuma cobrindo a traseira de um HR-V durante a lavagem' },
+  { f:'civic',          k:'t', c:'Honda Civic — acabamento',    a:'Honda Civic branco refletindo as barras de LED do teto' },
+  { f:'moto-race',      k:'w', c:'Moto de pista',               a:'Moto de pista laranja preparada no box' },
+  { f:'fachada',        k:'t', c:'Audi Q3 — na fachada',        a:'Audi Q3 prata em frente à fachada da TortolaCar Detail' },
+  { f:'det-audi-roda',  k:'s', c:'Roda — Audi Q3',              a:'Detalhe da roda do Audi Q3 após o detalhamento' },
+  { f:'moto-twister',   k:'w', c:'Honda Twister',               a:'Honda Twister preta com brilho após o detalhamento' },
+  { f:'motos',          k:'t', c:'Box de motos',                a:'Três motocicletas em detalhamento no box' },
+  { f:'moto-estrada',   k:'t', c:'Depois do serviço',           a:'Moto preta na estrada ao entardecer após o detalhamento' },
 ];
 
 // Avaliações 5 estrelas publicadas no Google Maps.
@@ -50,23 +51,17 @@ const AVALIACOES = [
     t:'Ótimo atendimento. Serviço excelente.\nCarro com aparência de novo.\nConserteza quando precisar, não terei dúvida que é no TortolaCar que levarei meu carro para um trato especial.' },
 ];
 
-const MARQUEE = ['Polimento técnico','Vitrificação','PPF','Cristalização','Espelhamento',
-                 'Higienização interna','Restauração de faróis','Lavagem técnica','Motos','Micro pintura'];
-
-const MQ_FOTOS = ['det-polidor','det-bmw-capo','det-espuma','det-porsche-reflexo','det-moto-amarela',
-                  'det-civic','det-rr','det-audi','det-ppf','det-fachada-larga','det-bmw-grade','det-vermelho'];
-
 const HORARIOS = [
-  { d:'Segunda',  h:'08:00 — 18:00', abre:['08:00','18:00'] },
-  { d:'Terça',    h:'08:00 — 18:00', abre:['08:00','18:00'] },
-  { d:'Quarta',   h:'08:00 — 18:00', abre:['08:00','18:00'] },
-  { d:'Quinta',   h:'08:00 — 18:00', abre:['08:00','18:00'] },
-  { d:'Sexta',    h:'08:00 — 18:00', abre:['08:00','18:00'] },
-  { d:'Sábado',   h:'Fechado', abre:null },
-  { d:'Domingo',  h:'Fechado', abre:null },
+  { d:'Segunda', h:'08:00 — 18:00', abre:['08:00','18:00'] },
+  { d:'Terça',   h:'08:00 — 18:00', abre:['08:00','18:00'] },
+  { d:'Quarta',  h:'08:00 — 18:00', abre:['08:00','18:00'] },
+  { d:'Quinta',  h:'08:00 — 18:00', abre:['08:00','18:00'] },
+  { d:'Sexta',   h:'08:00 — 18:00', abre:['08:00','18:00'] },
+  { d:'Sábado',  h:'Fechado', abre:null },
+  { d:'Domingo', h:'Fechado', abre:null },
 ];
 
-/* --------------------------------------------------------------- HELPERS */
+/* -------------------------------------------------------------- HELPERS */
 const STAR = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>';
 
 /** <picture> com WebP e retorno em JPEG. */
@@ -74,98 +69,34 @@ const foto = (f, alt, attrs = 'loading="lazy" decoding="async"') =>
   `<picture><source srcset="assets/img/${f}.webp" type="image/webp">` +
   `<img src="assets/img/${f}.jpg" alt="${alt}" ${attrs}></picture>`;
 
-/** Iniciais do cliente para o avatar da avaliação. */
 const iniciais = (nome) => nome.trim().split(/\s+/)
   .filter(p => p.length > 2).slice(0, 2).map(p => p[0].toUpperCase()).join('');
 
 $$('[data-stars]').forEach(el => { el.innerHTML = STAR.repeat(+el.dataset.stars); });
 $('#yr').textContent = new Date().getFullYear();
 
-/* ------------------------------------------------------------- PRELOADER */
-const fechaPre = () => { const p = $('#pre'); if (p) setTimeout(() => p.classList.add('done'), 320); };
+/* ------------------------------------------------------------ PRELOADER */
+const fechaPre = () => {
+  const p = $('#pre');
+  if (!p || p.classList.contains('done')) return;
+  setTimeout(() => { p.classList.add('done'); $('#heroH1')?.classList.add('in'); }, 300);
+};
 addEventListener('load', fechaPre);
-setTimeout(fechaPre, 3500);
+setTimeout(fechaPre, 3200);
 
-/* --------------------------------------------------------------- MARQUEE */
+/* ------------------------------------------------------------- GALERIA */
 {
-  const bloco = MARQUEE.map(t => `<span>${t}</span>`).join('');
-  $('#mqTxt').innerHTML = bloco + bloco;
-
-  // as primeiras entram em tela logo abaixo do hero: carregam de imediato
-  const imgs = MQ_FOTOS.map((f, i) =>
-    `<figure>${foto(f, '', i < 5 ? 'decoding="async"' : 'loading="lazy" decoding="async"')}</figure>`).join('');
-  $('#mqImg').innerHTML = imgs + imgs;
-}
-
-/* ------------------------------------------------------ ÍNDICE DE SERVIÇOS */
-{
-  const linhas = $$('.idx-row');
-  const palco  = $('#idxStage');
-  const dentro = palco.querySelector('.idx-stage-in');
-  const legenda = $('#idxCap');
-  const desktop = matchMedia('(min-width:1000px)');
-
-  let montado = null;
-
-  const montaDesktop = () => {
-    dentro.querySelectorAll('picture').forEach(p => p.remove());
-    linhas.forEach((l, i) => {
-      dentro.insertAdjacentHTML('afterbegin', foto(l.dataset.img, ''));
-      const img = dentro.querySelector('picture img');
-      img.dataset.k = i;
-      if (i === 0) img.classList.add('on');
-    });
-    linhas.forEach(l => l.querySelector('.idx-row-img')?.remove());
-  };
-
-  const montaMobile = () => {
-    dentro.querySelectorAll('picture').forEach(p => p.remove());
-    linhas.forEach(l => {
-      if (l.querySelector('.idx-row-img')) return;
-      l.insertAdjacentHTML('afterbegin',
-        `<span class="idx-row-img">${foto(l.dataset.img, l.dataset.cap)}</span>`);
-    });
-  };
-
-  const ativa = (i) => {
-    linhas.forEach((l, k) => l.classList.toggle('on', k === i));
-    if (!desktop.matches) return;
-    dentro.querySelectorAll('img[data-k]').forEach(img => img.classList.toggle('on', +img.dataset.k === i));
-    legenda.textContent = linhas[i].dataset.cap;
-  };
-
-  const aplica = () => {
-    const modo = desktop.matches ? 'd' : 'm';
-    if (modo === montado) return;
-    montado = modo;
-    modo === 'd' ? montaDesktop() : montaMobile();
-    ativa(0);
-  };
-  aplica();
-  desktop.addEventListener('change', aplica);
-
-  linhas.forEach((l, i) => {
-    l.addEventListener('pointerenter', () => desktop.matches && ativa(i));
-    l.addEventListener('focus', () => ativa(i));
-    l.addEventListener('click', () => ativa(i));
-  });
-}
-
-/* ------------------------------------------------------ GALERIA COM PIN */
-{
-  const sec   = $('#galeria');
-  const track = $('#pinTrack');
+  const sec = $('#galeria'), track = $('#pinTrack');
+  const largo = { t:'fr--t', w:'fr--w', s:'fr--s' };
 
   track.innerHTML = GALERIA.map((g, i) => `
-    <figure class="frame frame--${g.k}" tabindex="0" role="button" data-lb="${i}"
-            aria-label="Ampliar: ${g.c}">
+    <figure class="fr ${largo[g.k]}" tabindex="0" role="button" data-lb="${i}"
+            data-cursor="Ver" aria-label="Ampliar: ${g.c}">
       ${foto(g.f, g.a, i < 3 ? 'decoding="async"' : 'loading="lazy" decoding="async"')}
-      <span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
-      <figcaption><i>${String(i + 1).padStart(2, '0')}</i>${g.c}</figcaption>
+      <figcaption>${g.c}</figcaption>
     </figure>`).join('');
 
-  $('#pinCount').textContent = `${GALERIA.length} registros`;
+  $('#pinCount').textContent = `${GALERIA.length} fotos`;
 
   const podePinar = () => matchMedia('(min-width:900px)').matches && !reduz;
   let dist = 0, rolagem = 0;
@@ -181,8 +112,8 @@ setTimeout(fechaPre, 3500);
     sec.classList.remove('nopin');
     track.style.transform = '';
     dist = Math.max(0, track.scrollWidth - innerWidth);
-    // a rolagem vertical necessária é limitada a ~2,2 telas: as fotos correm
-    // mais rápido que o dedo, senão a seção parece travada.
+    // a rolagem vertical é limitada a ~2,2 telas: as fotos correm mais
+    // rápido que o dedo, senão a seção parece travada
     rolagem = Math.min(dist, innerHeight * 2.2);
     sec.style.height = dist ? `${innerHeight + rolagem}px` : '';
   };
@@ -195,23 +126,20 @@ setTimeout(fechaPre, 3500);
 
   addEventListener('scroll', () => requestAnimationFrame(mover), { passive:true });
   addEventListener('resize', () => { medir(); mover(); });
-  // as fotos mudam a largura da trilha conforme carregam
-  addEventListener('load', () => { medir(); mover(); });
+  addEventListener('load',   () => { medir(); mover(); });
   medir();
 
-  // rolagem horizontal por arrasto quando não há pin (mobile)
   arrastavel(track, () => sec.classList.contains('nopin'));
 }
 
-/* ------------------------------------------------------------ AVALIAÇÕES */
+/* --------------------------------------------------- AVALIAÇÕES (PILHA) */
 {
-  const track = $('#revTrack');
-  track.innerHTML = AVALIACOES.map(r => `
-    <article class="rev">
-      <p class="rev-q">${r.t}</p>
-      ${r.t.length > 320 ? '<button class="rev-more" type="button">Ler completa</button>' : ''}
-      <footer class="rev-who">
-        <span class="rev-av" aria-hidden="true">${iniciais(r.n)}</span>
+  $('#stack').innerHTML = AVALIACOES.map((r, i) => `
+    <article class="rv" style="--i:${i}">
+      <q>${r.t}</q>
+      ${r.t.length > 300 ? '<button class="more" type="button">Ler completa</button>' : ''}
+      <footer class="who">
+        <span class="av" aria-hidden="true">${iniciais(r.n)}</span>
         <span>
           <b>${r.n}</b>
           <span>${r.q} · Google</span>
@@ -220,25 +148,39 @@ setTimeout(fechaPre, 3500);
       </footer>
     </article>`).join('');
 
-  track.addEventListener('click', e => {
-    const b = e.target.closest('.rev-more');
+  $('#stack').addEventListener('click', e => {
+    const b = e.target.closest('.more');
     if (!b) return;
-    const card = b.closest('.rev');
+    const card = b.closest('.rv');
     b.textContent = card.classList.toggle('open') ? 'Recolher' : 'Ler completa';
   });
 
-  carrossel(track, $('#revPrev'), $('#revNext'), $('#revDots'));
+  // o botão só aparece quando o texto realmente foi cortado — em telas
+  // largas a citação costuma caber inteira
+  const revisaCortes = () => {
+    $$('.rv').forEach(card => {
+      const b = card.querySelector('.more');
+      if (!b) return;
+      const q = card.querySelector('q');
+      const aberto = card.classList.contains('open');
+      if (aberto) { b.hidden = false; return; }
+      b.hidden = q.scrollHeight <= q.clientHeight + 2;
+    });
+  };
+  revisaCortes();
+  addEventListener('load', revisaCortes);
+  let tR;
+  addEventListener('resize', () => { clearTimeout(tR); tR = setTimeout(revisaCortes, 180); });
 }
 
-/* --------------------------------------------------------------- HORÁRIO */
+/* -------------------------------------------------------------- HORÁRIO */
 {
   const box = $('#hours'), pill = $('#pill');
-  const hoje = (new Date().getDay() + 6) % 7;               // 0 = segunda
+  const hoje = (new Date().getDay() + 6) % 7;                // 0 = segunda
 
   box.innerHTML = HORARIOS.map((h, k) => `
     <div class="${k === hoje ? 'now' : ''}">
-      <span>${k === hoje ? '<b>' + h.d + '</b>' : h.d}</span>
-      <span>${h.h}</span>
+      <span>${h.d}</span><span>${h.h}</span>
     </div>`).join('');
 
   const agora = new Date(), cfg = HORARIOS[hoje].abre;
@@ -253,11 +195,31 @@ setTimeout(fechaPre, 3500);
   pill.innerHTML = `<i></i>${aberto ? 'Aberto agora' : 'Fechado agora'}`;
 }
 
+/* ------------------------------------------------ TEMA CLARO / ESCURO */
+/* A página troca de superfície conforme a seção cruza o meio da tela.
+   É o que dá identidade sem precisar de enfeite. */
+{
+  const secoes = $$('[data-theme]');
+  let atual = 'dark';
+  const aplica = () => {
+    const meio = innerHeight * 0.5;
+    let tema = secoes[0].dataset.theme;
+    for (const s of secoes) {
+      const r = s.getBoundingClientRect();
+      if (r.top <= meio) tema = s.dataset.theme;
+    }
+    if (tema !== atual) { atual = tema; document.body.dataset.t = tema; }
+  };
+  addEventListener('scroll', () => requestAnimationFrame(aplica), { passive:true });
+  addEventListener('resize', aplica);
+  aplica();
+}
+
 /* ------------------------------------------------- HEADER · BARRA · NAV */
 {
   const hd = $('#hd'), bar = $('#bar'), wa = $('#wa');
   const links = $$('#nav a');
-  const secoes = links.map(a => $(a.getAttribute('href'))).filter(Boolean);
+  const alvos = links.map(a => $(a.getAttribute('href'))).filter(Boolean);
   let esperando = false;
 
   const aoRolar = () => {
@@ -265,13 +227,14 @@ setTimeout(fechaPre, 3500);
     const max = document.documentElement.scrollHeight - innerHeight;
     hd.classList.toggle('on', y > 40);
     bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-    wa.classList.toggle('on', y > 420);
+    wa.classList.toggle('on', y > 500);
 
-    let atual = '';
-    for (const s of secoes) if (s.offsetTop - 150 <= y) atual = s.id;
+    let id = '';
+    for (const s of alvos) if (s.offsetTop - 160 <= y) id = s.id;
     links.forEach(a => {
-      const ativo = a.getAttribute('href') === '#' + atual;
-      ativo ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current');
+      a.getAttribute('href') === '#' + id
+        ? a.setAttribute('aria-current', 'true')
+        : a.removeAttribute('aria-current');
     });
     esperando = false;
   };
@@ -279,7 +242,7 @@ setTimeout(fechaPre, 3500);
   aoRolar();
 }
 
-/* ----------------------------------------------------------- MENU MOBILE */
+/* ---------------------------------------------------------- MENU MOBILE */
 {
   const burger = $('#burger'), drawer = $('#drawer');
   const alterna = (forcar) => {
@@ -295,15 +258,21 @@ setTimeout(fechaPre, 3500);
   addEventListener('keydown', e => { if (e.key === 'Escape') alterna(false); });
 }
 
-/* ------------------------------------------------ REVELAÇÃO NA ROLAGEM */
+/* ----------------------------------------------- REVELAÇÃO NA ROLAGEM */
 {
-  // divide o parágrafo em palavras para revelar uma a uma
-  $$('.words').forEach(el => {
-    el.innerHTML = el.textContent.trim().split(/\s+/)
-      .map((p, i) => `<span style="transition-delay:${i * 26}ms">${p}</span>`).join(' ');
-  });
+  // quebra o parágrafo em linhas reais para revelar uma a uma
+  const emLinhas = (el) => {
+    const txt = el.innerHTML;
+    el.innerHTML = txt.split(/<br\s*\/?>/i)
+      .map(l => `<span class="ln"><span>${l.trim()}</span></span>`).join('');
+    el.classList.add('lines');
+    [...el.querySelectorAll('.ln > span')].forEach((s, i) => {
+      s.style.transitionDelay = `${i * 90}ms`;
+    });
+  };
+  $$('[data-lines]').forEach(emLinhas);
 
-  const alvos = [...$$('[data-rv]'), ...$$('.words'), ...$$('.chrome'), ...$$('.step'), ...$$('.nums div')];
+  const alvos = [...$$('[data-rv]'), ...$$('[data-lines]'), ...$$('.step')];
   if (reduz || !('IntersectionObserver' in window)) {
     alvos.forEach(e => e.classList.add('in'));
   } else {
@@ -313,7 +282,7 @@ setTimeout(fechaPre, 3500);
         en.target.classList.add('in');
         obs.unobserve(en.target);
       });
-    }, { rootMargin:'0px 0px -6% 0px', threshold:0.06 });
+    }, { rootMargin:'0px 0px -8% 0px', threshold:0.05 });
     alvos.forEach(e => io.observe(e));
   }
 }
@@ -325,10 +294,10 @@ setTimeout(fechaPre, 3500);
     const alvo = +el.dataset.count;
     if (reduz) { el.textContent = alvo; return; }
     el.textContent = '0';
-    const t0 = performance.now(), dur = 1600;
+    const t0 = performance.now(), dur = 1700;
     const passo = (t) => {
       const p = Math.min((t - t0) / dur, 1);
-      el.textContent = Math.round(alvo * (1 - Math.pow(1 - p, 3)));
+      el.textContent = Math.round(alvo * (1 - Math.pow(1 - p, 4)));
       if (p < 1) requestAnimationFrame(passo);
     };
     requestAnimationFrame(passo);
@@ -341,9 +310,141 @@ setTimeout(fechaPre, 3500);
   } else nums.forEach(anima);
 }
 
+/* --------------------------------------------------------------- PARALLAX */
+/* As imagens andam mais devagar que o quadro que as recorta. */
+if (!reduz) {
+  const camadas = [...$$('[data-par]'), ...$$('.fr'), ...$$('.shot')];
+  let esperando = false;
+  const mover = () => {
+    const h = innerHeight;
+    for (const el of camadas) {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > h + 200) continue;
+      const img = el.matches('[data-par]') ? el.querySelector('img') : el.querySelector('img');
+      if (!img) continue;
+      const forca = el.dataset.par ? +el.dataset.par : 0.08;
+      const centro = (r.top + r.height / 2 - h / 2) / h;      // -1 … 1
+      img.style.transform = `translate3d(0,${(-centro * forca * 100).toFixed(2)}px,0)`;
+    }
+    esperando = false;
+  };
+  addEventListener('scroll', () => { if (!esperando) { esperando = true; requestAnimationFrame(mover); } }, { passive:true });
+  addEventListener('resize', mover);
+  mover();
+}
+
+/* ------------------------------------------- ÍNDICE: FOTO NO CURSOR */
+{
+  const linhas = $$('.idx-row');
+  const fly = $('#idxFly');
+  const desktop = matchMedia('(min-width:1000px)');
+  let montado = null;
+
+  const montaDesktop = () => {
+    linhas.forEach(l => l.querySelector('.idx-img')?.remove());
+    fly.innerHTML = linhas.map((l, i) =>
+      `<img src="assets/img/${l.dataset.img}.jpg" alt="" loading="lazy" decoding="async" data-k="${i}">`
+    ).join('');
+  };
+  const montaMobile = () => {
+    fly.innerHTML = '';
+    linhas.forEach(l => {
+      if (l.querySelector('.idx-img')) return;
+      l.insertAdjacentHTML('afterbegin',
+        `<span class="idx-img">${foto(l.dataset.img, l.dataset.cap)}</span>`);
+    });
+  };
+  const aplica = () => {
+    const modo = desktop.matches ? 'd' : 'm';
+    if (modo === montado) return;
+    montado = modo;
+    modo === 'd' ? montaDesktop() : montaMobile();
+  };
+  aplica();
+  desktop.addEventListener('change', aplica);
+
+  const ativa = (i) => {
+    linhas.forEach((l, k) => l.classList.toggle('on', k === i));
+    if (!desktop.matches || !fino) return;
+    fly.classList.add('on');
+    $$('img', fly).forEach(img => img.classList.toggle('on', +img.dataset.k === i));
+  };
+  const desativa = () => {
+    linhas.forEach(l => l.classList.remove('on'));
+    fly.classList.remove('on');
+  };
+
+  linhas.forEach((l, i) => {
+    l.addEventListener('pointerenter', () => desktop.matches && ativa(i));
+    l.addEventListener('focus', () => ativa(i));
+  });
+  $('#idx').addEventListener('pointerleave', desativa);
+
+  // a foto segue o cursor com atraso
+  if (fino && !reduz) {
+    let mx = 0, my = 0, fx = 0, fy = 0;
+    addEventListener('pointermove', e => {
+      // abaixo e à direita do cursor, dentro da tela: nunca cobre a linha lida
+      const l = fly.offsetWidth  || 240;
+      const a = fly.offsetHeight || 300;
+      mx = clamp(e.clientX + 190, l / 2 + 12, innerWidth  - l / 2 - 12);
+      my = clamp(e.clientY + 130, a / 2 + 12, innerHeight - a / 2 - 12);
+    });
+    const seguir = () => {
+      fx = lerp(fx, mx, 0.12); fy = lerp(fy, my, 0.12);
+      fly.style.translate = `${fx}px ${fy}px`;
+      requestAnimationFrame(seguir);
+    };
+    requestAnimationFrame(seguir);
+  }
+}
+
+/* --------------------------------------------------------------- CURSOR */
+if (fino && !reduz) {
+  const cur = $('#cur'), rot = cur.querySelector('b');
+  let mx = innerWidth / 2, my = innerHeight / 2, cx = mx, cy = my;
+  addEventListener('pointermove', e => {
+    mx = e.clientX; my = e.clientY;
+    if (!cur.classList.contains('live')) { cx = mx; cy = my; cur.classList.add('live'); }
+  });
+  const seguir = () => {
+    cx = lerp(cx, mx, 0.2); cy = lerp(cy, my, 0.2);
+    cur.style.translate = `${cx}px ${cy}px`;
+    requestAnimationFrame(seguir);
+  };
+  requestAnimationFrame(seguir);
+
+  const liga = (el) => {
+    el.addEventListener('pointerenter', () => {
+      cur.classList.add('big'); rot.textContent = el.dataset.cursor || '';
+    });
+    el.addEventListener('pointerleave', () => cur.classList.remove('big'));
+  };
+  $$('[data-cursor]').forEach(liga);
+  new MutationObserver(() => $$('[data-cursor]:not([data-cur-on])').forEach(el => {
+    el.dataset.curOn = '1'; liga(el);
+  })).observe(document.body, { childList:true, subtree:true });
+}
+
+/* ----------------------------------- BOTÃO: preenchimento a partir do cursor */
+if (fino) {
+  $$('.btn').forEach(b => {
+    b.addEventListener('pointerenter', e => {
+      const r = b.getBoundingClientRect();
+      b.style.setProperty('--px', `${e.clientX - r.left}px`);
+      b.style.setProperty('--py', `${e.clientY - r.top}px`);
+    });
+    b.addEventListener('pointerleave', e => {
+      const r = b.getBoundingClientRect();
+      b.style.setProperty('--px', `${e.clientX - r.left}px`);
+      b.style.setProperty('--py', `${e.clientY - r.top}px`);
+    });
+  });
+}
+
 /* -------------------------------------------------------------- LIGHTBOX */
 {
-  const lb = $('#lb'), img = $('#lbImg'), cap = $('#lbCap'), num = $('#lbNum');
+  const lb = $('#lb'), img = $('#lbImg'), cap = $('#lbCap');
   let i = 0;
 
   const mostra = (k) => {
@@ -351,8 +452,7 @@ setTimeout(fechaPre, 3500);
     const g = GALERIA[i];
     img.src = `assets/img/${g.f}.jpg`;
     img.alt = g.a;
-    cap.textContent = `${g.c} — ${i + 1}/${GALERIA.length}`;
-    num.textContent = String(i + 1).padStart(2, '0');
+    cap.textContent = `${g.c}  ·  ${String(i + 1).padStart(2, '0')}/${GALERIA.length}`;
   };
   const abre = (k) => { mostra(k); lb.classList.add('on'); document.body.style.overflow = 'hidden'; };
   const fecha = () => { lb.classList.remove('on'); document.body.style.overflow = ''; };
@@ -376,42 +476,6 @@ setTimeout(fechaPre, 3500);
     if (e.key === 'Escape')     fecha();
     if (e.key === 'ArrowLeft')  mostra(i - 1);
     if (e.key === 'ArrowRight') mostra(i + 1);
-  });
-}
-
-/* ---------------------------------------------------------- HERO: LUZ */
-if (!reduz && matchMedia('(hover:hover) and (pointer:fine)').matches) {
-  const hero = $('#hero');
-  hero.addEventListener('pointermove', e => {
-    const r = hero.getBoundingClientRect();
-    hero.style.setProperty('--mx', `${e.clientX - r.left}px`);
-    hero.style.setProperty('--my', `${e.clientY - r.top}px`);
-  });
-
-  // leve parallax no fundo do hero
-  const bg = $('.hero-bg');
-  let esperando = false;
-  addEventListener('scroll', () => {
-    if (esperando) return;
-    esperando = true;
-    requestAnimationFrame(() => {
-      const y = scrollY;
-      if (y < innerHeight * 1.25) bg.style.transform = `translate3d(0,${y * 0.24}px,0)`;
-      esperando = false;
-    });
-  }, { passive:true });
-}
-
-/* --------------------------------------------------------- BOTÃO MAGNÉTICO */
-if (!reduz && matchMedia('(hover:hover) and (pointer:fine)').matches) {
-  $$('[data-mag]').forEach(b => {
-    b.addEventListener('pointermove', e => {
-      const r = b.getBoundingClientRect();
-      const dx = (e.clientX - (r.left + r.width / 2)) / r.width;
-      const dy = (e.clientY - (r.top + r.height / 2)) / r.height;
-      b.style.transform = `translate(${dx * 12}px, ${dy * 7}px)`;
-    });
-    b.addEventListener('pointerleave', () => { b.style.transform = ''; });
   });
 }
 
@@ -440,48 +504,6 @@ function arrastavel(track, ativo = () => true) {
   track.addEventListener('click', e => {
     if (arrastando) { e.stopPropagation(); e.preventDefault(); }
   }, true);
-}
-
-/** Carrossel com setas, pontos, teclado e arrasto. */
-function carrossel(track, prev, next, dots) {
-  const itens = [...track.children];
-  if (!itens.length) return;
-
-  const passo = () => {
-    const w = itens[0].getBoundingClientRect().width;
-    const g = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || 16);
-    return w + g;
-  };
-  const porTela = () => Math.max(1, Math.round(track.clientWidth / passo()));
-  const paginas = () => Math.max(1, itens.length - porTela() + 1);
-
-  const desenha = () => {
-    dots.innerHTML = Array.from({ length: paginas() }, (_, k) =>
-      `<button type="button" aria-label="Ir para o item ${k + 1}"></button>`).join('');
-    [...dots.children].forEach((b, k) =>
-      b.addEventListener('click', () => track.scrollTo({ left: k * passo(), behavior:'smooth' })));
-  };
-  desenha();
-
-  const sync = () => {
-    const idx = Math.round(track.scrollLeft / passo());
-    [...dots.children].forEach((b, k) => b.classList.toggle('on', k === idx));
-    prev.disabled = track.scrollLeft < 6;
-    next.disabled = track.scrollLeft > track.scrollWidth - track.clientWidth - 6;
-  };
-  track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive:true });
-  sync();
-  // na primeira passada os cartões ainda não têm largura: refaz depois do layout
-  requestAnimationFrame(() => { desenha(); sync(); });
-  addEventListener('load', () => { desenha(); sync(); });
-
-  prev.addEventListener('click', () => track.scrollBy({ left:-passo() * porTela(), behavior:'smooth' }));
-  next.addEventListener('click', () => track.scrollBy({ left: passo() * porTela(), behavior:'smooth' }));
-
-  arrastavel(track);
-
-  let t;
-  addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { desenha(); sync(); }, 180); });
 }
 
 })();
