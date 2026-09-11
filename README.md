@@ -10,7 +10,7 @@ Site estático, sem build e sem dependências externas: basta publicar a pasta.
 
 ## Como publicar
 
-Qualquer hospedagem de arquivos estáticos serve. O site não tem etapa de build.
+Qualquer hospedagem de arquivos estáticos serve.
 
 | Serviço | Como fazer |
 | --- | --- |
@@ -25,8 +25,8 @@ npx http-server -p 8080
 # abra http://localhost:8080
 ```
 
-Abrir o `index.html` direto pelo `file://` funciona, mas as fontes locais
-são bloqueadas por CORS — prefira um servidor.
+Abrir o `index.html` direto pelo `file://` funciona, mas as fontes locais são
+bloqueadas por CORS — prefira um servidor.
 
 ---
 
@@ -36,47 +36,88 @@ são bloqueadas por CORS — prefira um servidor.
 index.html              página única, com dados estruturados (schema.org)
 robots.txt / sitemap.xml
 assets/
-  css/style.css         estilos e tokens da marca
+  css/style.css         identidade visual, componentes e responsividade
   css/fonts.css         @font-face das fontes auto-hospedadas
   js/main.js            conteúdo dinâmico e interações
-  fonts/                Archivo, Barlow e Barlow Condensed (.woff2)
-  img/                  fotos (.jpg + .webp) e o brasão em .svg
+  fonts/                Anton, Saira Condensed, Barlow, Space Mono, Kaushan Script
+  img/                  44 fotos (.jpg + .webp) e o brasão em .svg
 ```
+
+---
+
+## Identidade visual
+
+Tudo saiu da loja real:
+
+| Elemento | Origem |
+| --- | --- |
+| Vermelho `--red` | A fachada e a faixa do piso modular |
+| Preto quente `--ink` | O piso de borracha e o concreto do box |
+| Dourado `--gold` | As estrelas do brasão |
+| Faixa diagonal | A faixa vermelha que corta o piso |
+| Cromado nos títulos | O acabamento do brasão na placa |
+| Manuscrito | O slogan pintado na placa da fachada |
+
+As cores ficam todas em `:root`, no início do `assets/css/style.css`.
+
+**Tipografia:** Anton nos títulos, Saira Condensed na interface, Barlow no texto
+corrido, Space Mono nas etiquetas técnicas e Kaushan Script no slogan.
 
 ---
 
 ## Editando o conteúdo
 
-Serviços, fotos da galeria, avaliações e horários ficam em **arrays no topo do
-`assets/js/main.js`** — não é preciso mexer no HTML.
+**Serviços** ficam no `index.html`, dentro de `<ol class="idx-list">` — são
+conteúdo de busca, por isso estão no HTML. Cada linha tem `data-img` (nome do
+arquivo da foto, sem extensão) e `data-cap` (legenda).
+
+**Galeria, avaliações, marquee e horários** ficam em arrays no topo do
+`assets/js/main.js`:
 
 ```js
-const SERVICOS   = [ { t:'Título', d:'Descrição', i:'<path .../>' }, ... ];
-const GALERIA    = [ { f:'nome-do-arquivo', a:'texto alternativo', c:'legenda' }, ... ];
+const GALERIA    = [ { f:'arquivo', k:'tall|wide|sq', c:'legenda', a:'texto alternativo' }, ... ];
 const AVALIACOES = [ { n:'Nome', q:'quando', t:'texto da avaliação' }, ... ];
-const HORARIOS   = [ { d:'Segunda', h:'08:00 — 18:00', open:['08:00','18:00'] }, ... ];
+const MARQUEE    = ['Polimento técnico', 'Vitrificação', ...];
+const MQ_FOTOS   = ['det-polidor', 'det-bmw-capo', ...];
+const HORARIOS   = [ { d:'Segunda', h:'08:00 — 18:00', abre:['08:00','18:00'] }, ... ];
 ```
 
 **Trocar telefone ou endereço:** procure por `5544999906329` e por
 `São Judas Tadeu` no `index.html` e no `main.js`.
 
 **Adicionar uma foto:** coloque o `.jpg` e o `.webp` em `assets/img/` e
-acrescente uma entrada em `GALERIA`. A largura recomendada é ~1400px.
-
-**Cores da marca:** todas em `:root`, no início do `assets/css/style.css`
-(`--red`, `--gold`, `--ink`…).
+acrescente uma entrada em `GALERIA`. Largura recomendada: ~1400px.
 
 ---
 
 ## O que já está pronto
 
-- Carrossel de fotos com arrastar, setas, teclado e lightbox
-- Carrossel de avaliações 5★ do Google, com "ler avaliação completa"
+**Interações**
+
+- Galeria que prende a tela e corre na horizontal conforme você rola
+  (no celular vira rolagem lateral com encaixe)
+- Índice de serviços que troca a foto ao passar o mouse; no celular cada
+  serviço mostra a própria foto
+- Carrossel de avaliações 5★ do Google, com "ler completa"
+- Lightbox com teclado, setas e contador
+- Menu em tela cheia no celular, revelação no scroll, contadores animados
+
+**Efeitos**
+
+- Filme de grão sobre a página inteira
+- Brilho cromado que varre os títulos ao aparecerem
+- Holofote que segue o cursor no topo (lembra a lanterna de inspeção)
+- Botões com cantos chanfrados, preenchimento que entra pela esquerda e
+  atração magnética ao cursor
+- Dois marquees em direções opostas — um de texto, um de fotos em P&B
+- Parallax no topo e revelação palavra a palavra
+
+**Base**
+
+- Responsivo verificado de 320px a 1920px, sem rolagem horizontal
+- `schema.org` `AutoDetailing` com avaliações, serviços e horários
 - Horário que mostra **aberto/fechado agora** conforme o dia e a hora
-- Menu mobile, revelação no scroll, contadores animados, parallax no topo
-- Layout responsivo testado de 320px a 1440px
-- `schema.org` completo (`AutoDetailing`, avaliações, serviços e horários)
-- Respeita `prefers-reduced-motion`
+- Funciona sem JavaScript e respeita `prefers-reduced-motion`
 - Fontes e imagens locais — nenhuma requisição a terceiros
 
 ---
@@ -84,8 +125,10 @@ acrescente uma entrada em `GALERIA`. A largura recomendada é ~1400px.
 ## Conteúdo
 
 Fotos, avaliações e dados cadastrais vieram do perfil da loja no Google Maps.
-As placas visíveis nas fotos foram desfocadas. O brasão foi reproduzido em SVG
-a partir da fachada, mantendo forma, cores e tipografia originais.
+Além dos enquadramentos originais, há recortes de detalhe e texturas extraídos
+das mesmas fotos em resolução cheia. As placas visíveis foram desfocadas.
+O brasão foi reproduzido em SVG a partir da fachada, mantendo forma, cores e
+tipografia originais.
 
 ## Contato
 
