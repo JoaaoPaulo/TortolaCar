@@ -9,9 +9,7 @@
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
-const lerp  = (a, b, t) => a + (b - a) * t;
 const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const fino  = matchMedia('(hover:hover) and (pointer:fine)').matches;
 
 /* ------------------------------------------------------------- CONTEÚDO */
 
@@ -91,7 +89,7 @@ setTimeout(fechaPre, 3200);
 
   track.innerHTML = GALERIA.map((g, i) => `
     <figure class="fr ${largo[g.k]}" tabindex="0" role="button" data-lb="${i}"
-            data-cursor="Ver" aria-label="Ampliar: ${g.c}">
+            aria-label="Ampliar: ${g.c}">
       ${foto(g.f, g.a, i < 3 ? 'decoding="async"' : 'loading="lazy" decoding="async"')}
       <figcaption>${g.c}</figcaption>
     </figure>`).join('');
@@ -132,12 +130,13 @@ setTimeout(fechaPre, 3200);
   arrastavel(track, () => sec.classList.contains('nopin'));
 }
 
-/* --------------------------------------------------- AVALIAÇÕES (PILHA) */
+/* ------------------------------------------------------------ AVALIAÇÕES */
 {
-  $('#stack').innerHTML = AVALIACOES.map((r, i) => `
-    <article class="rv" style="--i:${i}">
+  const track = $('#revTrack');
+  track.innerHTML = AVALIACOES.map(r => `
+    <article class="rv">
       <q>${r.t}</q>
-      ${r.t.length > 300 ? '<button class="more" type="button">Ler completa</button>' : ''}
+      ${r.t.length > 260 ? '<button class="more" type="button">Ler completa</button>' : ''}
       <footer class="who">
         <span class="av" aria-hidden="true">${iniciais(r.n)}</span>
         <span>
@@ -148,22 +147,20 @@ setTimeout(fechaPre, 3200);
       </footer>
     </article>`).join('');
 
-  $('#stack').addEventListener('click', e => {
+  track.addEventListener('click', e => {
     const b = e.target.closest('.more');
     if (!b) return;
     const card = b.closest('.rv');
     b.textContent = card.classList.toggle('open') ? 'Recolher' : 'Ler completa';
   });
 
-  // o botão só aparece quando o texto realmente foi cortado — em telas
-  // largas a citação costuma caber inteira
+  // o botão só aparece quando a citação foi mesmo cortada
   const revisaCortes = () => {
     $$('.rv').forEach(card => {
       const b = card.querySelector('.more');
       if (!b) return;
+      if (card.classList.contains('open')) { b.hidden = false; return; }
       const q = card.querySelector('q');
-      const aberto = card.classList.contains('open');
-      if (aberto) { b.hidden = false; return; }
       b.hidden = q.scrollHeight <= q.clientHeight + 2;
     });
   };
@@ -171,6 +168,8 @@ setTimeout(fechaPre, 3200);
   addEventListener('load', revisaCortes);
   let tR;
   addEventListener('resize', () => { clearTimeout(tR); tR = setTimeout(revisaCortes, 180); });
+
+  carrossel(track, $('#revPrev'), $('#revNext'), $('#revDots'));
 }
 
 /* -------------------------------------------------------------- HORÁRIO */
@@ -193,26 +192,6 @@ setTimeout(fechaPre, 3200);
   }
   pill.className = 'pill' + (aberto ? '' : ' shut');
   pill.innerHTML = `<i></i>${aberto ? 'Aberto agora' : 'Fechado agora'}`;
-}
-
-/* ------------------------------------------------ TEMA CLARO / ESCURO */
-/* A página troca de superfície conforme a seção cruza o meio da tela.
-   É o que dá identidade sem precisar de enfeite. */
-{
-  const secoes = $$('[data-theme]');
-  let atual = 'dark';
-  const aplica = () => {
-    const meio = innerHeight * 0.5;
-    let tema = secoes[0].dataset.theme;
-    for (const s of secoes) {
-      const r = s.getBoundingClientRect();
-      if (r.top <= meio) tema = s.dataset.theme;
-    }
-    if (tema !== atual) { atual = tema; document.body.dataset.t = tema; }
-  };
-  addEventListener('scroll', () => requestAnimationFrame(aplica), { passive:true });
-  addEventListener('resize', aplica);
-  aplica();
 }
 
 /* ------------------------------------------------- HEADER · BARRA · NAV */
@@ -333,27 +312,40 @@ if (!reduz) {
   mover();
 }
 
-/* ------------------------------------------- ÍNDICE: FOTO NO CURSOR */
+/* ------------------------------------------------- ÍNDICE DE SERVIÇOS */
+/* No desktop a foto aparece num painel fixo ao lado; no celular cada linha
+   mostra a própria foto. */
 {
   const linhas = $$('.idx-row');
-  const fly = $('#idxFly');
+  const fig    = $('#svcFig');
+  const caixa  = fig.querySelector('.box');
+  const cap    = $('#svcCap');
   const desktop = matchMedia('(min-width:1000px)');
   let montado = null;
 
   const montaDesktop = () => {
     linhas.forEach(l => l.querySelector('.idx-img')?.remove());
-    fly.innerHTML = linhas.map((l, i) =>
+    caixa.innerHTML = linhas.map((l, i) =>
       `<img src="assets/img/${l.dataset.img}.jpg" alt="" loading="lazy" decoding="async" data-k="${i}">`
     ).join('');
+    ativa(0);
   };
   const montaMobile = () => {
-    fly.innerHTML = '';
+    caixa.innerHTML = '';
     linhas.forEach(l => {
       if (l.querySelector('.idx-img')) return;
       l.insertAdjacentHTML('afterbegin',
         `<span class="idx-img">${foto(l.dataset.img, l.dataset.cap)}</span>`);
     });
   };
+
+  function ativa(i) {
+    linhas.forEach((l, k) => l.classList.toggle('on', k === i));
+    if (!desktop.matches) return;
+    $$('img', caixa).forEach(img => img.classList.toggle('on', +img.dataset.k === i));
+    cap.textContent = linhas[i].dataset.cap;
+  }
+
   const aplica = () => {
     const modo = desktop.matches ? 'd' : 'm';
     if (modo === montado) return;
@@ -363,82 +355,10 @@ if (!reduz) {
   aplica();
   desktop.addEventListener('change', aplica);
 
-  const ativa = (i) => {
-    linhas.forEach((l, k) => l.classList.toggle('on', k === i));
-    if (!desktop.matches || !fino) return;
-    fly.classList.add('on');
-    $$('img', fly).forEach(img => img.classList.toggle('on', +img.dataset.k === i));
-  };
-  const desativa = () => {
-    linhas.forEach(l => l.classList.remove('on'));
-    fly.classList.remove('on');
-  };
-
   linhas.forEach((l, i) => {
     l.addEventListener('pointerenter', () => desktop.matches && ativa(i));
     l.addEventListener('focus', () => ativa(i));
-  });
-  $('#idx').addEventListener('pointerleave', desativa);
-
-  // a foto segue o cursor com atraso
-  if (fino && !reduz) {
-    let mx = 0, my = 0, fx = 0, fy = 0;
-    addEventListener('pointermove', e => {
-      // abaixo e à direita do cursor, dentro da tela: nunca cobre a linha lida
-      const l = fly.offsetWidth  || 240;
-      const a = fly.offsetHeight || 300;
-      mx = clamp(e.clientX + 190, l / 2 + 12, innerWidth  - l / 2 - 12);
-      my = clamp(e.clientY + 130, a / 2 + 12, innerHeight - a / 2 - 12);
-    });
-    const seguir = () => {
-      fx = lerp(fx, mx, 0.12); fy = lerp(fy, my, 0.12);
-      fly.style.translate = `${fx}px ${fy}px`;
-      requestAnimationFrame(seguir);
-    };
-    requestAnimationFrame(seguir);
-  }
-}
-
-/* --------------------------------------------------------------- CURSOR */
-if (fino && !reduz) {
-  const cur = $('#cur'), rot = cur.querySelector('b');
-  let mx = innerWidth / 2, my = innerHeight / 2, cx = mx, cy = my;
-  addEventListener('pointermove', e => {
-    mx = e.clientX; my = e.clientY;
-    if (!cur.classList.contains('live')) { cx = mx; cy = my; cur.classList.add('live'); }
-  });
-  const seguir = () => {
-    cx = lerp(cx, mx, 0.2); cy = lerp(cy, my, 0.2);
-    cur.style.translate = `${cx}px ${cy}px`;
-    requestAnimationFrame(seguir);
-  };
-  requestAnimationFrame(seguir);
-
-  const liga = (el) => {
-    el.addEventListener('pointerenter', () => {
-      cur.classList.add('big'); rot.textContent = el.dataset.cursor || '';
-    });
-    el.addEventListener('pointerleave', () => cur.classList.remove('big'));
-  };
-  $$('[data-cursor]').forEach(liga);
-  new MutationObserver(() => $$('[data-cursor]:not([data-cur-on])').forEach(el => {
-    el.dataset.curOn = '1'; liga(el);
-  })).observe(document.body, { childList:true, subtree:true });
-}
-
-/* ----------------------------------- BOTÃO: preenchimento a partir do cursor */
-if (fino) {
-  $$('.btn').forEach(b => {
-    b.addEventListener('pointerenter', e => {
-      const r = b.getBoundingClientRect();
-      b.style.setProperty('--px', `${e.clientX - r.left}px`);
-      b.style.setProperty('--py', `${e.clientY - r.top}px`);
-    });
-    b.addEventListener('pointerleave', e => {
-      const r = b.getBoundingClientRect();
-      b.style.setProperty('--px', `${e.clientX - r.left}px`);
-      b.style.setProperty('--py', `${e.clientY - r.top}px`);
-    });
+    l.addEventListener('click', () => ativa(i));
   });
 }
 
@@ -480,6 +400,48 @@ if (fino) {
 }
 
 /* ================================================================ UTILS == */
+
+/** Carrossel com setas, pontos e arrasto. */
+function carrossel(track, prev, next, dots) {
+  const itens = [...track.children];
+  if (!itens.length) return;
+
+  const passo = () => {
+    const w = itens[0].getBoundingClientRect().width;
+    const g = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || 16);
+    return w + g;
+  };
+  const porTela = () => Math.max(1, Math.round(track.clientWidth / passo()));
+  const paginas = () => Math.max(1, itens.length - porTela() + 1);
+
+  const desenha = () => {
+    dots.innerHTML = Array.from({ length: paginas() }, (_, k) =>
+      `<button type="button" aria-label="Ir para a avaliação ${k + 1}"></button>`).join('');
+    [...dots.children].forEach((b, k) =>
+      b.addEventListener('click', () => track.scrollTo({ left: k * passo(), behavior:'smooth' })));
+  };
+  desenha();
+
+  const sync = () => {
+    const idx = Math.round(track.scrollLeft / passo());
+    [...dots.children].forEach((b, k) => b.classList.toggle('on', k === idx));
+    prev.disabled = track.scrollLeft < 6;
+    next.disabled = track.scrollLeft > track.scrollWidth - track.clientWidth - 6;
+  };
+  track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive:true });
+  sync();
+  // na primeira passada os cartões ainda não têm largura final
+  requestAnimationFrame(() => { desenha(); sync(); });
+  addEventListener('load', () => { desenha(); sync(); });
+
+  prev.addEventListener('click', () => track.scrollBy({ left:-passo() * porTela(), behavior:'smooth' }));
+  next.addEventListener('click', () => track.scrollBy({ left: passo() * porTela(), behavior:'smooth' }));
+
+  arrastavel(track);
+
+  let t;
+  addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { desenha(); sync(); }, 180); });
+}
 
 /** Arrasto horizontal com o mouse, preservando cliques. */
 function arrastavel(track, ativo = () => true) {

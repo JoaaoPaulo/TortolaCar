@@ -45,21 +45,21 @@ assets/
 
 ## A identidade
 
-A página **alterna entre claro e escuro conforme você rola** — a recepção e o
-box da loja. É isso que dá caráter, não um fundo preto uniforme.
+Uma superfície só, do topo ao rodapé: um off-white quente. O contraste vem das
+fotografias — o hero e a chamada final são fotos de tela cheia, escuras por
+natureza. Nada de troca de tema no meio da rolagem.
 
 | | |
 | --- | --- |
-| `--bone` `#f4f1ea` | Concreto claro e quente das seções de texto |
-| `--ink` `#0b0b0c` | Preto profundo das seções de fotografia |
-| `--red` `#dc2f28` | O vermelho da fachada, único acento |
+| `--paper` `#f7f5f1` | Fundo único da página |
+| `--ink` `#16150f` | Texto |
+| `--red` `#c4322b` | O vermelho da fachada, único acento |
 
 **Tipografia:** Instrument Serif nos títulos — a serifada ecoa o monograma do
 brasão, e o itálico vermelho marca a palavra-chave de cada frase. Manrope no
 texto e na interface. Só duas famílias.
 
-Os tokens ficam em `:root` e no bloco `body[data-t="light"]`, no início do
-`assets/css/style.css`. Cada seção declara `data-theme="light|dark"` no HTML.
+Os tokens ficam em `:root`, no início do `assets/css/style.css`.
 
 ---
 
@@ -89,22 +89,20 @@ acrescente uma entrada em `GALERIA`. Largura recomendada: ~1400px.
 
 ## Efeitos
 
+Movimento discreto, sem firula:
+
 | Efeito | Onde |
 | --- | --- |
-| Troca de superfície clara/escura na rolagem | a página inteira |
 | Título que sobe linha a linha, por máscara | hero, títulos de seção |
-| Foto que segue o cursor ao passar pelos serviços | serviços (desktop) |
-| Cursor que vira um disco com "Ver" | galeria (desktop) |
+| Painel que troca a foto ao percorrer a lista | serviços (desktop) |
 | Galeria que prende a tela e corre na horizontal | galeria (desktop) |
-| Cartões de avaliação que empilham ao rolar | avaliações (desktop) |
 | Cortina que sobe revelando a foto | a loja, mapa |
 | Parallax da imagem dentro do quadro | hero, galeria, a loja |
-| Preenchimento do botão a partir do ponto do cursor | todos os botões |
-| Menu que abre em círculo a partir do ícone | celular |
+| Preenchimento do botão entrando pela esquerda | todos os botões |
+| Carrossel com setas, pontos e arrasto | avaliações |
 
-No celular tudo tem equivalente adequado ao toque: a galeria vira rolagem
-lateral com encaixe, cada serviço mostra a própria foto, e a pilha de
-avaliações vira lista.
+No celular tudo tem equivalente ao toque: a galeria vira rolagem lateral com
+encaixe e cada serviço mostra a própria foto acima do texto.
 
 ---
 
@@ -114,7 +112,7 @@ avaliações vira lista.
 - Sem erros de console; todas as imagens carregam
 - Funciona sem JavaScript (serviços, telefone e endereço no HTML)
 - Respeita `prefers-reduced-motion`
-- Foco visível no teclado; contraste de texto 17:1 nos dois temas
+- Foco visível no teclado; contraste de texto 16,8:1
 - `schema.org` `AutoDetailing` com avaliações, serviços e horários
 - Horário mostra **aberto/fechado agora** conforme o dia e a hora
 - Fontes e imagens locais — nenhuma requisição a terceiros

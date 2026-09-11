@@ -23,10 +23,10 @@
 <link rel="stylesheet" href="assets/css/fonts.css">
 <link rel="stylesheet" href="assets/css/style.css">
 <noscript><style>
-  #pre,#bar,#cur,#idxFly{display:none}
+  #pre,#bar{display:none}
   [data-rv]{opacity:1!important;transform:none!important;clip-path:none!important}
   .lines .ln > span,.hero h1 .l > span{transform:none!important}
-  #galeria,.stack .more{display:none}
+  #galeria,.rev-nav,.rv .more{display:none}
 </style></noscript>
 
 <script type="application/ld+json">
@@ -70,7 +70,7 @@
 }
 </script>
 </head>
-<body data-t="dark">
+<body>
 
 <div id="pre">
   <div class="pre-in">
@@ -80,8 +80,6 @@
 </div>
 
 <div id="bar"></div>
-<div id="cur" aria-hidden="true"><b></b></div>
-<figure id="idxFly" aria-hidden="true"></figure>
 
 <!-- ═══════════════════════════════════════════════════════════ HEADER ══ -->
 <header class="hd" id="hd">
@@ -133,7 +131,7 @@
 <main id="topo">
 
 <!-- ═════════════════════════════════════════════════════════════ HERO ══ -->
-<section class="hero" id="hero" data-theme="dark">
+<section class="hero" id="hero">
   <div class="hero-bg" data-par="0.22">
     <picture>
       <source srcset="assets/img/porsche.webp" type="image/webp">
@@ -158,7 +156,7 @@
         <span>Pedir orçamento</span>
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1s-.7 1-.9 1.2c-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.6-2.1-.2-.3 0-.4.1-.6l.4-.5c.2-.2.2-.3.3-.5s0-.4 0-.5c-.1-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.5.3-.7.3-1.4.2-1.5 0-.2-.2-.3-.5-.4M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2m0 18.2c-1.6 0-3.2-.4-4.6-1.3l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2"/></svg>
       </a>
-      <a class="btn btn--out btn--lg" href="#servicos">
+      <a class="btn btn--ghost btn--lg" href="#servicos">
         <span>Ver serviços</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6 13l6 6 6-6"/></svg>
       </a>
@@ -177,10 +175,10 @@
 </section>
 
 <!-- ════════════════════════════════════════════════════════ MANIFESTO ══ -->
-<section class="sec manif" data-theme="light">
+<section class="sec manif">
   <div class="wrap">
     <span class="tag" data-rv>Desde a primeira lavagem</span>
-    <p class="lines" data-lines style="margin-top:1.6rem">
+    <p class="frase lines" data-lines style="margin-top:1.6rem">
       A gente não entrega carro lavado. Entrega pintura que volta a
       refletir — e um jeito de manter <em class="it">assim</em>.
     </p>
@@ -195,7 +193,7 @@
 </section>
 
 <!-- ═════════════════════════════════════════════════════════ SERVIÇOS ══ -->
-<section class="sec" id="servicos" data-theme="light">
+<section class="sec" id="servicos">
   <div class="wrap">
     <header class="sec-head">
       <span class="tag" data-rv>Serviços</span>
@@ -204,6 +202,7 @@
         Antes de encostar a máquina, a pintura é avaliada sob luz de inspeção.</p>
     </header>
 
+    <div class="svc">
     <ol class="idx" id="idx">
       <li><button class="idx-row" type="button" data-img="det-espuma" data-cap="Lavagem técnica em dois baldes">
         <span class="n">01</span><span class="t">Lavagem técnica</span>
@@ -254,11 +253,17 @@
         <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
         <span class="d">Detalhamento completo de motocicletas, do uso urbano à moto de pista. Parafuso por parafuso.</span></button></li>
     </ol>
+
+    <figure class="svc-fig" id="svcFig" aria-hidden="true">
+      <div class="box"></div>
+      <figcaption id="svcCap"></figcaption>
+    </figure>
+    </div>
   </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════ GALERIA ══ -->
-<section class="pin" id="galeria" data-theme="dark" aria-label="Galeria de trabalhos">
+<section class="pin" id="galeria" aria-label="Galeria de trabalhos">
   <div class="pin-stage">
     <header class="pin-head">
       <div>
@@ -272,7 +277,7 @@
 </section>
 
 <!-- ════════════════════════════════════════════════════════ PROTOCOLO ══ -->
-<section class="sec" id="protocolo" data-theme="light">
+<section class="sec" id="protocolo">
   <div class="wrap">
     <header class="sec-head">
       <span class="tag" data-rv>Protocolo</span>
@@ -299,7 +304,7 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════ AVALIAÇÕES ══ -->
-<section class="sec" id="avaliacoes" data-theme="dark">
+<section class="sec" id="avaliacoes">
   <div class="wrap">
     <header class="sec-head">
       <span class="tag" data-rv>Avaliações</span>
@@ -318,12 +323,17 @@
       </a>
     </div>
 
-    <div class="stack" id="stack"></div>
+    <div class="rev-view"><div class="rev-track" id="revTrack"></div></div>
+    <div class="rev-nav">
+      <button class="cbtn" id="revPrev" aria-label="Avaliação anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 9 12l6-6"/></svg></button>
+      <button class="cbtn" id="revNext" aria-label="Próxima avaliação"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+      <div class="dots" id="revDots"></div>
+    </div>
   </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════ A LOJA ══ -->
-<section class="sec" id="loja" data-theme="light">
+<section class="sec" id="loja">
   <div class="wrap">
     <div class="shop">
       <div>
@@ -366,7 +376,7 @@
 </section>
 
 <!-- ═════════════════════════════════════════════════════════ CONTATO ══ -->
-<section class="sec" id="contato" data-theme="light">
+<section class="sec" id="contato">
   <div class="wrap">
     <header class="sec-head">
       <span class="tag" data-rv>Contato</span>
@@ -405,7 +415,7 @@
 </section>
 
 <!-- ═════════════════════════════════════════════════════════════ CTA ══ -->
-<section class="sec cta" data-theme="dark">
+<section class="sec cta">
   <div class="cta-bg" data-par="0.15">
     <picture><source srcset="assets/img/det-rr.webp" type="image/webp">
     <img src="assets/img/det-rr.jpg" alt="" loading="lazy" decoding="async" aria-hidden="true"></picture>
@@ -419,7 +429,7 @@
         <span>Chamar no WhatsApp</span>
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1s-.7 1-.9 1.2c-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.6-2.1-.2-.3 0-.4.1-.6l.4-.5c.2-.2.2-.3.3-.5s0-.4 0-.5c-.1-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.5.3-.7.3-1.4.2-1.5 0-.2-.2-.3-.5-.4M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2m0 18.2c-1.6 0-3.2-.4-4.6-1.3l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2"/></svg>
       </a>
-      <a class="btn btn--out btn--lg" href="https://www.instagram.com/tortolacardetail/" target="_blank" rel="noopener">
+      <a class="btn btn--ghost btn--lg" href="https://www.instagram.com/tortolacardetail/" target="_blank" rel="noopener">
         <span>@tortolacardetail</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
       </a>
@@ -430,7 +440,7 @@
 </main>
 
 <!-- ══════════════════════════════════════════════════════════ FOOTER ══ -->
-<footer class="ft" data-theme="dark">
+<footer class="ft">
   <div class="wrap">
     <div class="ft-grid">
       <div class="ft-brand">
